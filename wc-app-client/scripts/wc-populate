@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+
+
+APP_URL=http://localhost:27018
+CMD_F=./wc-populate.cmd
+
+function help() {
+
+  echo ""
+  echo ""
+  echo "Script to add dummy data to the world cup app."
+  echo ""
+  echo "Command Options:"
+  echo ""
+  echo "    L - populate locations"
+  echo "    T - populate teams"
+  echo ""
+  echo "Examples:"
+  echo ""
+  echo "    1. Populate all the records in cluding locations, players and teams."
+  echo "    > wc-populate"
+  echo ""
+  echo "    2. Populate only the locations."
+  echo "    > wc-populate L"
+  echo ""
+
+}
+
+function call() {
+
+  echo curl -X '"'DELETE'"' '"'"${APP_URL}"/$2/$3/'"' >> "$CMD_F"
+  echo curl -X '"'POST'"' -H '"'Content-Type: application/json'"' -d '"'"$1"'"' '"'"${APP_URL}"/$2/'"' >> "$CMD_F"
+
+}
+
+
+function countries() {
+
+  local category=countries
+
+  declare -A values
+  		#   lon      lat           id
+  values[canada]="48.748228 -135.7285136 canada"
+  values[mexico]="23.188985 -113.3087511 mexico"
+  values[unitedstates]="16.1 -138 unitedstates"
+
+  for val in "${values[@]}"; do
+    val=($val)
+    data="{\\\"lon\\\": ${val[0]}, \\\"lat\\\": ${val[1]}, \\\"id\\\": \\\"${val[2]}\\\"}"
+    call "$data" $category "${val[2]}"
+  done
+
+}
+
+
+function cities() {
+
+  local category=cities
+
+  declare -A values
+                 #     lon          lat        id      country
+  values[vancouver]="49.2578182 -123.2063047 vancouver canada"
+  values[toronto]="43.718371 -79.5428672 toronto canada"
+  values[mexicocity]="19.3909832 -99.3084259 mexicocity mexico"
+  values[guadalajara]="20.6739329 -103.4178151 guadalajara mexico"
+  values[seattle]="47.6131419 -122.5068728 seattle unitedstates"
+  values[atlanta]="33.7675434 -84.5849418 atlanta unitedstates"
+
+  for val in "${values[@]}"; do
+    val=($val)
+    data="{\\\"lon\\\": ${val[0]}, \\\"lat\\\": ${val[1]}, \\\"id\\\": \\\"${val[2]}\\\", \\\"country\\\": \\\"${val[3]}\\\"}"
+    call "$data" $category "${val[2]}"
+  done
+
+}
+
+
+function stadiums() {
+
+  local category=stadiums
+
+  declare -A values
+                  #   lon        lat         id      city    capacity
+  values[bcplace]="49.2578182 -123.2063047 bcplace vancouver 54500"
+  values[bmofield]="43.718371 -79.5428672 bmofield toronto 30000"
+  values[azteca]="19.3909832 -99.3084259 azteca mexicocity 83264"
+  values[akron]="20.6739329 -103.4178151 akron guadalajara 46355"
+  values[lumen]="47.6131419 -122.5068728 lumen seattle 68740"
+  values[mercbenz]="33.7675434 -84.5849418 mercbenz atlanta 71000"
+
+  for val in "${values[@]}"; do
+    val=($val)
+    data="{\\\"lon\\\": ${val[0]}, \\\"lat\\\": ${val[1]}, \\\"id\\\": \\\"${val[2]}\\\", \\\"city\\\": \\\"${val[3]}\\\", \\\"capacity\\\": ${val[4]}}"
+    call "$data" $category "${val[2]}"
+  done
+
+}
+
+
+function players() {
+
+  local category=players
+
+  declare -A values
+           # birth    number   id    position    nation    club
+  values[walker]="1990-05-28 2 walker defender england manc"
+  values[pope]="1992-04-19 22 pope keeper england nufc"
+  values[joelinton]="1996-08-14 7 joelinton midfield brazil nufc"
+  values[ederson]="1993-08-17 31 ederson keeper brazil manc"
+  values[ramsay]="2003-07-31 22 ramsay defender scotland livr"
+  values[robertson]="1994-03-11 26 robertson defender scotland livr"
+
+  for val in "${values[@]}"; do
+    val=($val)
+    data="{\\\"birth\\\": \\\"${val[0]}\\\", \\\"number\\\": ${val[1]}, \\\"id\\\": \\\"${val[2]}\\\", \\\"position\\\": \\\"${val[3]}\\\", \\\"nation\\\": \\\"${val[4]}\\\", \\\"club\\\": \\\"${val[5]}\\\"}"
+    call "$data" $category "${val[2]}"
+  done
+
+}
+
+
+function nations() {
+
+  local category=nations
+
+  declare -A values
+           # rank birth id
+  values[england]="5 1872 england"
+  values[brazil]="1 1930 brazil"
+  values[scotland]="36 1873 scotland"
+
+  for val in "${values[@]}"; do
+    val=($val)
+    data="{\\\"rank\\\": ${val[0]}, \\\"birth\\\": ${val[1]}, \\\"id\\\": \\\"${val[2]}\\\"}"
+    call "$data" $category "${val[2]}"
+  done
+
+}
+
+
+function clubs() {
+
+  local category=clubs
+
+  declare -A values
+           # rank birth id
+  values[manc]="1 1880 manc"
+  values[nufc]="4 1892 nufc"
+  values[livr]="5 1892 livr"
+
+  for val in "${values[@]}"; do
+    val=($val)
+    data="{\\\"rank\\\": ${val[0]}, \\\"birth\\\": ${val[1]}, \\\"id\\\": \\\"${val[2]}\\\"}"
+    call "$data" $category "${val[2]}"
+  done
+
+}
+
+
+function main() {
+
+  rm -f "$CMD_F"
+  touch "$CMD_F"
+
+  case "$1" in
+
+    L) countries; cities; stadiums ;;
+    T) nations; clubs; players ;;
+    h) help ;;
+    *) countries; cities; stadiums; nations; clubs; players ;;
+
+  esac   
+
+}
+
+main "$@"

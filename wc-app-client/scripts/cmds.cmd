@@ -1,0 +1,6 @@
+curl -X "DELETE" "http://localhost:27018/countries/unitedstates"
+curl -X "POST" -H "Content-Type: application/json" -d "{\"lon\": 5.8512558, \"lat\": -138, \"id\": \"unitedstates\"}" "http://localhost:27018/countries"
+curl -X "DELETE" "http://localhost:27018/countries/canada"
+curl -X "POST" -H "Content-Type: application/json" -d "{\"lon\": 48.748228, \"lat\": -135.7285136, \"id\": \"canada\"}" "http://localhost:27018/countries"
+curl -X "DELETE" "http://localhost:27018/countries/mexico"
+curl -X "POST" -H "Content-Type: application/json" -d "{\"lon\": 23.188985, \"lat\": -113.3087511, \"id\": \"mexico\"}" "http://localhost:27018/countries"
